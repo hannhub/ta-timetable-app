@@ -20,7 +20,9 @@ def setup_authenticator():
     }
 
     config = {
-        "usernames": credentials,
+        "credentials": {  # ✅ corrected here
+            "usernames": credentials
+        },
         "cookie": {
             "name": "timetable_auth",
             "key": "abcdef",
