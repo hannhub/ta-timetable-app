@@ -482,9 +482,6 @@ if uploaded_file:
                     ta_df["Year Group"].astype(str) + " - " + ta_df["Subject"].astype(str)
                 )
 
-                pivot = ta_df.pivot(index="Period", columns="Day", values="Info")
-                pivot = pivot.reindex(index=periods, columns=days)
-
                 pivot = ta_df.pivot(index="Day", columns="Period", values="Info")
                 pivot = pivot.reindex(index=days, columns=periods)
 
