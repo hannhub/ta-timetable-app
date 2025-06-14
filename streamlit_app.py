@@ -50,7 +50,18 @@ authenticator = setup_authenticator()
 # `login` represents the location of the login form rather than its title.
 # Pass an explicit form name and use the `location` keyword so the call works
 # across package versions and ensures the form is displayed in the main area.
-name, authentication_status, _ = authenticator.login("Login", location="main")
+# The function can return ``None`` if an unexpected version of the library is
+# installed, so guard against that before unpacking.
+login_data = authenticator.login("Login", location="main")
+if login_data is None:
+    name = None
+    authentication_status = None
+else:
+    try:
+        name, authentication_status, _ = login_data
+    except ValueError:
+        # Some versions of streamlit-authenticator return two values
+        name, authentication_status = login_data
 
 
 if authentication_status is False:
