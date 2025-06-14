@@ -31,7 +31,8 @@ def setup_authenticator():
 
 # --- Call it here ---
 authenticator = setup_authenticator()
-name, authentication_status, username = authenticator.login("Login", location="main")
+name, authentication_status, username = authenticator.login(form_name="Login", location="main")
+
 
 
 
