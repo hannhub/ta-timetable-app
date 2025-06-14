@@ -33,7 +33,7 @@ def setup_authenticator():
 
 # --- Call it here ---
 authenticator = setup_authenticator()
-name, authentication_status, username = authenticator.login(form_name="Login", location="main")
+name, authentication_status, username = authenticator.login("Login", "main")
 
 
 
@@ -47,8 +47,6 @@ else:
     st.success(f"Welcome, {name} 👋")
 
     authenticator.logout("Logout", "sidebar")
-
-    authenticator.logout(location="sidebar", button_name="Logout")
 
 
 st.title("TA Timetable Assignment")
