@@ -83,6 +83,9 @@ Using the App:
 3. View the automatically assigned timetable.
 4. Download the updated version or edit manually within the app.
 
+Note: The app saves preferences to a local `saved_preferences.csv` file. This
+file is ignored by Git, so create your own copy to keep preferences between runs.
+
 ---
 
 For any issues or suggestions, feel free to raise an issue on this GitHub repository.
