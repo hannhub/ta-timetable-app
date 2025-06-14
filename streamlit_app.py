@@ -438,13 +438,6 @@ if uploaded_file:
         timetable_df[["Year Group", "Subject", "Day", "Period", "Assigned TA"]]
     )
 
-    st.download_button(
-        "Download Updated Timetable",
-        data=timetable_df.to_csv(index=False).encode("utf-8"),
-        file_name="TA_Assigned_Timetable.csv",
-        mime="text/csv",
-    )
-
     st.subheader("Unassigned or Conflicted Slots")
     unassigned = timetable_df[timetable_df["Assigned TA"].str.contains("⚠")]
     st.dataframe(unassigned)
@@ -498,7 +491,7 @@ if uploaded_file:
     timetable_excel = build_timetable_workbook(timetable_df)
     st.subheader("Download Timetable Grids")
     st.download_button(
-        "Download Timetable Excel",
+        "Download Timetable",
         data=timetable_excel,
         file_name="TA_Timetables.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
