@@ -346,16 +346,22 @@ if uploaded_file:
         "TA Name"
     ].unique()
     if len(duplicates) > 0:
-        st.error(
+        st.warning(
             "Duplicate TA names found in Availability sheet: "
             f"{', '.join(sorted(map(str, duplicates)))}. "
-            "Please ensure each TA appears only once."
+            "Combining entries into one."
         )
-        st.stop()
+        availability_df = (
+            availability_df.replace("\u2713", True)
+            .fillna(False)
+            .groupby("TA Name")
+            .any()
+            .reset_index()
+        )
+    else:
+        availability_df = availability_df.replace("\u2713", True).fillna(False)
 
-    availability_lookup = (
-        availability_df.set_index("TA Name").replace("\u2713", True).fillna(False)
-    )
+    availability_lookup = availability_df.set_index("TA Name")
     ta_assignment_count = defaultdict(int)
 
     def is_available(ta, slot):
