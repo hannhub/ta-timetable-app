@@ -33,18 +33,9 @@ def setup_authenticator():
             "name": names[i],
             "password": hashed_passwords[i],
         }
-        for i in range(min(len(usernames), len(names), len(hashed_passwords)))
-
-    usernames = ["hannah", "wendy"]
-    names = ["Hannah", "Wendy"]
-    hashed_passwords = [
-        "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
-        "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m",  # wendy
-    ]
-
-    credentials = {
-        usernames[i]: {"name": names[i], "password": hashed_passwords[i]}
-        for i in range(len(usernames))
+        for i in range(
+            min(len(usernames), len(names), len(hashed_passwords))
+        )
     }
 
     authenticator = stauth.Authenticate(
