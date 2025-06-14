@@ -8,39 +8,39 @@ def setup_authenticator():
     usernames = ["hannah", "wendy"]
     names = ["Hannah", "Wendy"]
     hashed_passwords = [
-        "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",
-        "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"
+        "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
+        "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
     ]
 
     credentials = {
-        usernames[i]: {
-            "name": names[i],
-            "password": hashed_passwords[i]
-        } for i in range(len(usernames))
+        "usernames": {
+            usernames[i]: {
+                "name": names[i],
+                "password": hashed_passwords[i]
+            } for i in range(len(usernames))
+        }
     }
 
-    config = {
-        "credentials": {  # ✅ corrected here
-            "usernames": credentials
-        },
-        "cookie": {
-            "name": "timetable_auth",
-            "key": "abcdef",
-            "expiry_days": 1
-        },
-        "preauthorized": {}
+    cookie_config = {
+        "name": "timetable_auth",
+        "key": "abcdef",
+        "expiry_days": 1
     }
 
-authenticator = stauth.Authenticate(
-    config["credentials"]["usernames"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    cookie_expiry_days=config["cookie"]["expiry_days"]
-)
+    authenticator = stauth.Authenticate(
+        credentials["usernames"],  # <- this is now correct
+        cookie_config["name"],
+        cookie_config["key"],
+        cookie_expiry_days=cookie_config["expiry_days"]
+    )
+
+    return authenticator
 
 
-authenticator, config = setup_authenticator()
+# Use the authenticator
+authenticator = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
+
 
 if authentication_status is False:
     st.error("Username/password is incorrect")
