@@ -4,13 +4,34 @@ import pandas as pd
 import os
 from collections import defaultdict
 import inspect
+import yaml
+
+ADMIN_USERS = ["admin"]
+CREDENTIALS_FILE = "user_credentials.yaml"
+current_credentials = {}
+
+def load_credentials():
+    if os.path.exists(CREDENTIALS_FILE):
+        with open(CREDENTIALS_FILE, "r") as f:
+            return yaml.safe_load(f) or {}
+    return {}
+
+
+def save_credentials(creds: dict) -> None:
+    with open(CREDENTIALS_FILE, "w") as f:
+        yaml.safe_dump(creds, f)
 
 st.set_page_config(layout="wide")
 
 
 def setup_authenticator():
-
-    if "auth" in st.secrets:
+    if os.path.exists(CREDENTIALS_FILE):
+        with open(CREDENTIALS_FILE, "r") as f:
+            file_creds = yaml.safe_load(f) or {}
+        usernames = file_creds.get("usernames", [])
+        names = file_creds.get("names", [])
+        hashed_passwords = file_creds.get("hashed_passwords", [])
+    elif "auth" in st.secrets:
         creds = st.secrets["auth"]
         usernames = creds.get("usernames", [])
         names = creds.get("names", [])
@@ -21,9 +42,10 @@ def setup_authenticator():
         hashed_passwords = os.getenv("AUTH_HASHED_PASSWORDS", "").split(",") if os.getenv("AUTH_HASHED_PASSWORDS") else []
 
     if not (usernames and names and hashed_passwords):
-        usernames = ["hannah", "wendy"]
-        names = ["Hannah", "Wendy"]
+        usernames = ["admin", "hannah", "wendy"]
+        names = ["Admin", "Hannah", "Wendy"]
         hashed_passwords = [
+            "$2b$12$zXvvOuoI9xdg9qvhptMXQew0AXl6I4h77OWD20biQImrnZ2Yze0h.",
             "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",
             "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m",
         ]
@@ -38,6 +60,15 @@ def setup_authenticator():
             min(len(usernames), len(names), len(hashed_passwords))
         )
     }
+
+    global current_credentials
+    current_credentials = {
+        "usernames": usernames,
+        "names": names,
+        "hashed_passwords": hashed_passwords,
+    }
+    if not os.path.exists(CREDENTIALS_FILE):
+        save_credentials(current_credentials)
 
     authenticator = stauth.Authenticate(
         {"usernames": credentials}, "timetable_auth", "abcdef", cookie_expiry_days=1
@@ -62,6 +93,50 @@ def perform_login(auth):
             return auth.login("main")
 
     return auth.login("Login", location="main")
+
+
+def admin_page():
+    st.title("Admin")
+    creds = load_credentials()
+    usernames = creds.get("usernames", [])
+    names = creds.get("names", [])
+    hashed_passwords = creds.get("hashed_passwords", [])
+
+    with st.form("add_user"):
+        new_user = st.text_input("Username")
+        new_name = st.text_input("Display Name")
+        new_pw = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Add User")
+    if submitted:
+        if not (new_user and new_name and new_pw):
+            st.error("All fields required")
+        elif new_user in usernames:
+            st.error("User already exists")
+        else:
+            usernames.append(new_user)
+            names.append(new_name)
+            hashed_passwords.append(stauth.Hasher.hash(new_pw))
+            save_credentials({
+                "usernames": usernames,
+                "names": names,
+                "hashed_passwords": hashed_passwords,
+            })
+            st.success(f"Added {new_user}")
+
+    if usernames:
+        st.subheader("Delete User")
+        to_delete = st.selectbox("Select", usernames)
+        if st.button("Delete"):
+            idx = usernames.index(to_delete)
+            usernames.pop(idx)
+            names.pop(idx)
+            hashed_passwords.pop(idx)
+            save_credentials({
+                "usernames": usernames,
+                "names": names,
+                "hashed_passwords": hashed_passwords,
+            })
+            st.success(f"Deleted {to_delete}")
 
 
 # --- Call it here ---
@@ -95,6 +170,14 @@ else:
     st.success(f"Welcome, {name} 👋")
 
     authenticator.logout("Logout", "sidebar")
+
+    pages = ["Home"]
+    if name in ADMIN_USERS:
+        pages.append("Admin")
+    choice = st.sidebar.radio("Navigation", pages)
+    if choice == "Admin":
+        admin_page()
+        st.stop()
 
 
 st.title("TA Timetable Assignment")
