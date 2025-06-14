@@ -74,6 +74,14 @@ Environment variable alternative:
 
 You can generate password hashes using `streamlit_authenticator.Hasher` in a Python shell.
 
+Admin Workflow:
+---------------
+When logged in as a username listed in `ADMIN_USERS` (default `admin`), a sidebar
+option **Admin** becomes available. On this page you can add or delete users.
+Entering a username, display name and password stores the credentials in
+`user_credentials.yaml` with the password securely hashed. Restart the app after
+making changes for new accounts to become active.
+
 ---
 
 Using the App:
