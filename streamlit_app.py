@@ -1,5 +1,5 @@
 # Authentication temporarily disabled
-# import streamlit as st
+import streamlit as st
 # import streamlit_authenticator as stauth
 import pandas as pd
 import os
