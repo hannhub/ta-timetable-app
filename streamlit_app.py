@@ -3,24 +3,24 @@ import streamlit_authenticator as stauth
 import pandas as pd
 import os
 from collections import defaultdict
-import yaml
-from yaml.loader import SafeLoader
 
-# Authentication setup
 def setup_authenticator():
+    usernames = ["hannah", "wendy"]
+    names = ["Hannah", "Wendy"]
+    hashed_passwords = [
+        "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",
+        "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"
+    ]
+
+    credentials = {
+        usernames[i]: {
+            "name": names[i],
+            "password": hashed_passwords[i]
+        } for i in range(len(usernames))
+    }
+
     config = {
-        "credentials": {
-            "usernames": {
-                "hannah": {
-                    "name": "Hannah",
-                    "password": "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW"
-                },
-                "wendy": {
-                    "name": "Wendy",
-                    "password": "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"
-                }
-            }
-        },
+        "usernames": credentials,
         "cookie": {
             "name": "timetable_auth",
             "key": "abcdef",
@@ -29,11 +29,14 @@ def setup_authenticator():
         "preauthorized": {}
     }
 
-    authenticator = stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
+    authenticator = stauth.Authenticate(
+        config,
+        config["cookie"]["name"],
+        config["cookie"]["key"],
+        cookie_expiry_days=config["cookie"]["expiry_days"]
+    )
     return authenticator, config
 
-
-# Setup and login
 authenticator, config = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
 
@@ -48,7 +51,9 @@ else:
     authenticator.logout("Logout", "sidebar")
 
 st.set_page_config(layout="wide")
-st.title("TA Timetable Assignment with Preference Saving")
+st.title("TA Timetable Assignment")
+
+# ... (rest of your original app code remains unchanged here)
 
 PREF_FILE = "saved_preferences.csv"
 
