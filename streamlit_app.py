@@ -139,6 +139,26 @@ def admin_page():
             st.success(f"Deleted {to_delete}")
 
 
+    if usernames:
+        st.subheader("Change Password")
+        with st.form("change_password"):
+            user_to_change = st.selectbox("Select", usernames)
+            new_pass = st.text_input("New Password", type="password")
+            change_submit = st.form_submit_button("Change Password")
+        if change_submit:
+            if not new_pass:
+                st.error("Password required")
+            else:
+                hashed_passwords[usernames.index(user_to_change)] = stauth.Hasher.hash(new_pass)
+                save_credentials({
+                    "usernames": usernames,
+                    "names": names,
+                    "hashed_passwords": hashed_passwords,
+                })
+                st.success(f"Password updated for {user_to_change}")
+
+
+
 # --- Call it here ---
 authenticator = setup_authenticator()
 # In some versions of `streamlit-authenticator` the first positional argument of
@@ -151,13 +171,15 @@ login_data = perform_login(authenticator)
 if login_data is None:
     # Fallback to session state values when perform_login returns None
     name = st.session_state.get("name")
+    username = st.session_state.get("username")
     authentication_status = st.session_state.get("authentication_status")
 else:
     try:
-        name, authentication_status, _ = login_data
+        name, authentication_status, username = login_data
     except ValueError:
         # Some versions of streamlit-authenticator return two values
         name, authentication_status = login_data
+        username = st.session_state.get("username")
 
 
 if authentication_status is False:
@@ -172,7 +194,11 @@ else:
     authenticator.logout("Logout", "sidebar")
 
     pages = ["Home"]
+
+    if username and username in ADMIN_USERS:
+
     if name in ADMIN_USERS:
+
         pages.append("Admin")
     choice = st.sidebar.radio("Navigation", pages)
     if choice == "Admin":
