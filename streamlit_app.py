@@ -48,9 +48,9 @@ def setup_authenticator():
 authenticator = setup_authenticator()
 # In some versions of `streamlit-authenticator` the first positional argument of
 # `login` represents the location of the login form rather than its title.
-# Explicitly use a keyword argument to avoid mismatched parameters across
-# versions and ensure the form is displayed in the main area.
-name, authentication_status, _ = authenticator.login(location="main")
+# Pass an explicit form name and use the `location` keyword so the call works
+# across package versions and ensures the form is displayed in the main area.
+name, authentication_status, _ = authenticator.login("Login", location="main")
 
 
 if authentication_status is False:
