@@ -10,7 +10,7 @@ from collections import defaultdict
 
 
 st.set_page_config(layout="wide")
-st.title("TA Timetable Assignment with Preference Saving")
+st.title("TA Timetable Assignment")
 
 PREF_FILE = "saved_preferences.csv"
 
