@@ -4,6 +4,8 @@ import pandas as pd
 import os
 from collections import defaultdict
 
+st.set_page_config(layout="wide")
+
 
 def setup_authenticator():
     usernames = ["hannah", "wendy"]
@@ -43,8 +45,6 @@ elif authentication_status is None:
 else:
     st.success(f"Welcome, {name} 👋")
     authenticator.logout("Logout", "sidebar")
-
-st.set_page_config(layout="wide")
 st.title("TA Timetable Assignment")
 
 # ... (rest of your original app code remains unchanged here)
