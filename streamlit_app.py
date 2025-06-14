@@ -1,51 +1,13 @@
-import streamlit as st
-import streamlit_authenticator as stauth
+# Authentication temporarily disabled
+# import streamlit as st
+# import streamlit_authenticator as stauth
 import pandas as pd
 import os
 from collections import defaultdict
-import yaml
-from yaml.loader import SafeLoader
-
-# Authentication setup
-def setup_authenticator():
-    config = {
-        "credentials": {
-            "usernames": {
-                "hannah": {
-                    "name": "Hannah",
-                    "password": "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW"
-                },
-                "wendy": {
-                    "name": "Wendy",
-                    "password": "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"
-                }
-            }
-        },
-        "cookie": {
-            "name": "timetable_auth",
-            "key": "abcdef",
-            "expiry_days": 1
-        },
-        "preauthorized": {}
-    }
-
-    authenticator = stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
-    return authenticator, config
+# import yaml
+# from yaml.loader import SafeLoader
 
 
-# Setup and login
-authenticator, config = setup_authenticator()
-name, authentication_status, username = authenticator.login("Login", "main")
-
-if authentication_status is False:
-    st.error("Username/password is incorrect")
-    st.stop()
-elif authentication_status is None:
-    st.warning("Please enter your username and password")
-    st.stop()
-else:
-    st.success(f"Welcome, {name} 👋")
-    authenticator.logout("Logout", "sidebar")
 
 st.set_page_config(layout="wide")
 st.title("TA Timetable Assignment with Preference Saving")
