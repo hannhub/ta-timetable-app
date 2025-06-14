@@ -468,8 +468,6 @@ if uploaded_file:
             d for d in unique_days if d not in day_order
         ]
 
-        days = sorted(df["Day"].dropna().unique())
-
         periods = sorted(df["Period"].dropna().unique())
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
             for ta in sorted(df["Assigned TA"].dropna().unique()):
@@ -484,9 +482,6 @@ if uploaded_file:
 
                 pivot = ta_df.pivot(index="Period", columns="Day", values="Info")
                 pivot = pivot.reindex(index=periods, columns=days)
-
-                pivot = ta_df.pivot(index="Day", columns="Period", values="Info")
-                pivot = pivot.reindex(index=days, columns=periods)
 
                 pivot.index.name = ""
                 pivot.to_excel(writer, sheet_name=str(ta), startrow=1)
