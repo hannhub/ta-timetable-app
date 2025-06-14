@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from collections import defaultdict
 
+
 def setup_authenticator():
     usernames = ["hannah", "wendy"]
     names = ["Hannah", "Wendy"]
@@ -13,33 +14,25 @@ def setup_authenticator():
     ]
 
     credentials = {
-        "usernames": {
-            usernames[i]: {
-                "name": names[i],
-                "password": hashed_passwords[i]
-            } for i in range(len(usernames))
-        }
-    }
-
-    cookie_config = {
-        "name": "timetable_auth",
-        "key": "abcdef",
-        "expiry_days": 1
+        usernames[i]: {
+            "name": names[i],
+            "password": hashed_passwords[i]
+        } for i in range(len(usernames))
     }
 
     authenticator = stauth.Authenticate(
-        credentials["usernames"],  # <- this is now correct
-        cookie_config["name"],
-        cookie_config["key"],
-        cookie_expiry_days=cookie_config["expiry_days"]
+        {"usernames": credentials},
+        "timetable_auth",
+        "abcdef",
+        cookie_expiry_days=1
     )
-
     return authenticator
 
 
-# Use the authenticator
+# --- Call it here ---
 authenticator = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
+
 
 
 if authentication_status is False:
