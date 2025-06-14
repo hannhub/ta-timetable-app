@@ -8,6 +8,33 @@ st.set_page_config(layout="wide")
 
 
 def setup_authenticator():
+
+    if "auth" in st.secrets:
+        creds = st.secrets["auth"]
+        usernames = creds.get("usernames", [])
+        names = creds.get("names", [])
+        hashed_passwords = creds.get("hashed_passwords", [])
+    else:
+        usernames = os.getenv("AUTH_USERNAMES", "").split(",") if os.getenv("AUTH_USERNAMES") else []
+        names = os.getenv("AUTH_NAMES", "").split(",") if os.getenv("AUTH_NAMES") else []
+        hashed_passwords = os.getenv("AUTH_HASHED_PASSWORDS", "").split(",") if os.getenv("AUTH_HASHED_PASSWORDS") else []
+
+    if not (usernames and names and hashed_passwords):
+        usernames = ["hannah", "wendy"]
+        names = ["Hannah", "Wendy"]
+        hashed_passwords = [
+            "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",
+            "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m",
+        ]
+        st.warning("Using default demo credentials. Set your own via secrets or environment variables.")
+
+    credentials = {
+        usernames[i]: {
+            "name": names[i],
+            "password": hashed_passwords[i],
+        }
+        for i in range(min(len(usernames), len(names), len(hashed_passwords)))
+
     usernames = ["hannah", "wendy"]
     names = ["Hannah", "Wendy"]
     hashed_passwords = [
