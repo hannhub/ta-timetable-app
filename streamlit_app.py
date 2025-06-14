@@ -31,13 +31,13 @@ def setup_authenticator():
         "preauthorized": {}
     }
 
-    authenticator = stauth.Authenticate(
-        config,
-        config["cookie"]["name"],
-        config["cookie"]["key"],
-        cookie_expiry_days=config["cookie"]["expiry_days"]
-    )
-    return authenticator, config
+   authenticator = stauth.Authenticate(
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    cookie_expiry_days=config["cookie"]["expiry_days"]
+)
+
 
 authenticator, config = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
