@@ -162,9 +162,9 @@ if uploaded_file:
 
         valid_preferred = [
             ta for ta in preferred_tas
-            if ta in availability_lookup.index and is_available(ta, slot) and not timetable_df[
+            if ta in availability_lookup.index and is_available(ta, slot) and timetable_df[
                 (timetable_df["Slot"] == slot) & (timetable_df["Assigned TA"] == ta)
-            ].any().any()
+            ].empty
         ]
 
         consistency_preferred = [
@@ -182,9 +182,9 @@ if uploaded_file:
 
         available_tas = [
             ta for ta in availability_lookup.index
-            if is_available(ta, slot) and not timetable_df[
+            if is_available(ta, slot) and timetable_df[
                 (timetable_df["Slot"] == slot) & (timetable_df["Assigned TA"] == ta)
-            ].any().any()
+            ].empty
         ]
         if available_tas:
             return min(available_tas, key=lambda t: ta_assignment_count[t])
