@@ -33,7 +33,7 @@ def setup_authenticator():
 
 # --- Call it here ---
 authenticator = setup_authenticator()
-name, authentication_status, username = authenticator.login("Login", "main")
+name, authentication_status, _ = authenticator.login("Login", "main")
 
 
 
