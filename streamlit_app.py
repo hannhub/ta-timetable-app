@@ -31,7 +31,8 @@ def setup_authenticator():
 
 # --- Call it here ---
 authenticator = setup_authenticator()
-name, authentication_status, username = authenticator.login("Login", location="main")
+name, authentication_status, username = authenticator.login(form_name="Login", location="main")
+
 
 
 if authentication_status is False:
@@ -42,12 +43,12 @@ elif authentication_status is None:
     st.stop()
 else:
     st.success(f"Welcome, {name} 👋")
-    authenticator.logout("Logout", "sidebar")
+    authenticator.logout(location="sidebar", button_name="Logout")
 
 st.set_page_config(layout="wide")
 st.title("TA Timetable Assignment")
 
-# ... (rest of your original app code remains unchanged here)
+# Functions to load and save TA preference data
 
 PREF_FILE = "saved_preferences.csv"
 
@@ -162,9 +163,9 @@ if uploaded_file:
 
         valid_preferred = [
             ta for ta in preferred_tas
-            if ta in availability_lookup.index and is_available(ta, slot) and not timetable_df[
+            if ta in availability_lookup.index and is_available(ta, slot) and timetable_df[
                 (timetable_df["Slot"] == slot) & (timetable_df["Assigned TA"] == ta)
-            ].any().any()
+            ].empty
         ]
 
         consistency_preferred = [
@@ -182,9 +183,9 @@ if uploaded_file:
 
         available_tas = [
             ta for ta in availability_lookup.index
-            if is_available(ta, slot) and not timetable_df[
+            if is_available(ta, slot) and timetable_df[
                 (timetable_df["Slot"] == slot) & (timetable_df["Assigned TA"] == ta)
-            ].any().any()
+            ].empty
         ]
         if available_tas:
             return min(available_tas, key=lambda t: ta_assignment_count[t])
