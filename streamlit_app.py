@@ -138,6 +138,7 @@ def admin_page():
             })
             st.success(f"Deleted {to_delete}")
 
+
     if usernames:
         st.subheader("Change Password")
         with st.form("change_password"):
@@ -155,6 +156,7 @@ def admin_page():
                     "hashed_passwords": hashed_passwords,
                 })
                 st.success(f"Password updated for {user_to_change}")
+
 
 
 # --- Call it here ---
@@ -192,7 +194,11 @@ else:
     authenticator.logout("Logout", "sidebar")
 
     pages = ["Home"]
+
     if username and username in ADMIN_USERS:
+
+    if name in ADMIN_USERS:
+
         pages.append("Admin")
     choice = st.sidebar.radio("Navigation", pages)
     if choice == "Admin":
