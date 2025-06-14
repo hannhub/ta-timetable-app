@@ -55,6 +55,27 @@ Each sheet should follow the structure outlined below:
 
 ---
 
+Authentication Setup:
+---------------------
+Provide your own login details through a `.streamlit/secrets.toml` file or environment variables.
+
+Example `secrets.toml`:
+```
+[auth]
+usernames = ["user1", "user2"]
+names = ["User One", "User Two"]
+hashed_passwords = ["<hash1>", "<hash2>"]
+```
+
+Environment variable alternative:
+- `AUTH_USERNAMES="user1,user2"`
+- `AUTH_NAMES="User One,User Two"`
+- `AUTH_HASHED_PASSWORDS="<hash1>,<hash2>"`
+
+You can generate password hashes using `streamlit_authenticator.Hasher` in a Python shell.
+
+---
+
 Using the App:
 --------------
 1. Upload the formatted Excel file when prompted.
