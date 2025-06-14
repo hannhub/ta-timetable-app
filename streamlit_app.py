@@ -47,7 +47,7 @@ else:
 st.set_page_config(layout="wide")
 st.title("TA Timetable Assignment")
 
-# ... (rest of your original app code remains unchanged here)
+# Functions to load and save TA preference data
 
 PREF_FILE = "saved_preferences.csv"
 
