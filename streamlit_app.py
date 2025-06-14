@@ -3,6 +3,7 @@ import streamlit_authenticator as stauth
 import pandas as pd
 import os
 from collections import defaultdict
+import inspect
 
 st.set_page_config(layout="wide")
 
@@ -44,6 +45,25 @@ def setup_authenticator():
     return authenticator
 
 
+def perform_login(auth):
+    """Handle Authenticate.login across library versions."""
+    try:
+        params = inspect.signature(auth.login).parameters
+    except (TypeError, ValueError):
+        params = {}
+
+    if "form_name" in params and "location" in params:
+        return auth.login(form_name="Login", location="main")
+
+    if params and next(iter(params)) == "location":
+        try:
+            return auth.login("main", "Login")
+        except TypeError:
+            return auth.login("main")
+
+    return auth.login("Login", location="main")
+
+
 # --- Call it here ---
 authenticator = setup_authenticator()
 # In some versions of `streamlit-authenticator` the first positional argument of
@@ -52,7 +72,7 @@ authenticator = setup_authenticator()
 # across package versions and ensures the form is displayed in the main area.
 # The function can return ``None`` if an unexpected version of the library is
 # installed, so guard against that before unpacking.
-login_data = authenticator.login("Login", location="main")
+login_data = perform_login(authenticator)
 if login_data is None:
     name = None
     authentication_status = None
