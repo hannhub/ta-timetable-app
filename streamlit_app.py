@@ -8,24 +8,18 @@ from yaml.loader import SafeLoader
 
 # Authentication setup
 def setup_authenticator():
-    names = ["Hannah", "Wendy"]
-    usernames = ["hannah", "wendy"]
-    hashed_passwords = [
-        "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
-        "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
-    ]
-
-    credentials = {
-        usernames[i]: {
-            "name": names[i],
-            "password": hashed_passwords[i]
-        }
-        for i in range(len(usernames))
-    }
-
     config = {
         "credentials": {
-            "usernames": credentials
+            "usernames": {
+                "hannah": {
+                    "name": "Hannah",
+                    "password": "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW"
+                },
+                "wendy": {
+                    "name": "Wendy",
+                    "password": "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"
+                }
+            }
         },
         "cookie": {
             "name": "timetable_auth",
@@ -37,6 +31,7 @@ def setup_authenticator():
 
     authenticator = stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
     return authenticator, config
+
 
 # Setup and login
 authenticator, config = setup_authenticator()
