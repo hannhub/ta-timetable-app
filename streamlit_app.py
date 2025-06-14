@@ -7,33 +7,37 @@ import yaml
 from yaml.loader import SafeLoader
 
 # Authentication setup
-names = ["Hannah", "Wendy"]
-usernames = ["hannah", "wendy"]
-hashed_passwords = [
-    "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
-    "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
-]
+def setup_authenticator():
+    names = ["Hannah", "Wendy"]
+    usernames = ["hannah", "wendy"]
+    hashed_passwords = [
+        "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
+        "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
+    ]
 
+    config = {
+        "credentials": {
+            "usernames": {
+                usernames[i]: {
+                    "name": names[i],
+                    "password": hashed_passwords[i]
+                } for i in range(len(usernames))
+            }
+        },
+        "cookie": {
+            "name": "timetable_auth",
+            "key": "abcdef",
+            "expiry_days": 1
+        },
+        "preauthorized": {}
+    }
 
-config = {
-    "credentials": {
-        "usernames": {
-            usernames[i]: {
-                "name": names[i],
-                "password": hashed_passwords[i]
-            } for i in range(len(usernames))
-        }
-    },
-    "cookie": {
-        "name": "timetable_auth",
-        "key": "abcdef",
-        "expiry_days": 1
-    },
-    "preauthorized": {}
-}
+    return stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
 
-authenticator = stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
+# Setup and login
+authenticator = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
+
 
 if authentication_status is False:
     st.error("Username/password is incorrect")
