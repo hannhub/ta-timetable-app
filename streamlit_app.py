@@ -74,8 +74,9 @@ authenticator = setup_authenticator()
 # installed, so guard against that before unpacking.
 login_data = perform_login(authenticator)
 if login_data is None:
-    name = None
-    authentication_status = None
+    # Fallback to session state values when perform_login returns None
+    name = st.session_state.get("name")
+    authentication_status = st.session_state.get("authentication_status")
 else:
     try:
         name, authentication_status, _ = login_data
