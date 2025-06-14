@@ -455,3 +455,38 @@ if uploaded_file:
     )
     ta_summary.index.name = "TA Name"
     st.dataframe(ta_summary.reset_index())
+
+    def build_timetable_workbook(df: pd.DataFrame) -> bytes:
+        """Return an Excel workbook with a sheet for each TA in a grid format."""
+        from io import BytesIO
+
+        output = BytesIO()
+        days = sorted(df["Day"].dropna().unique())
+        periods = sorted(df["Period"].dropna().unique())
+        with pd.ExcelWriter(output, engine="openpyxl") as writer:
+            for ta in sorted(df["Assigned TA"].dropna().unique()):
+                if str(ta).startswith("\u26A0"):
+                    continue
+                ta_df = df[df["Assigned TA"] == ta].copy()
+                if ta_df.empty:
+                    continue
+                ta_df["Info"] = (
+                    ta_df["Year Group"].astype(str) + " - " + ta_df["Subject"].astype(str)
+                )
+                pivot = ta_df.pivot(index="Day", columns="Period", values="Info")
+                pivot = pivot.reindex(index=days, columns=periods)
+                pivot.index.name = ""
+                pivot.to_excel(writer, sheet_name=str(ta), startrow=1)
+                ws = writer.sheets[str(ta)]
+                ws.cell(row=1, column=1, value=str(ta))
+        output.seek(0)
+        return output.getvalue()
+
+    timetable_excel = build_timetable_workbook(timetable_df)
+    st.subheader("Download Timetable Grids")
+    st.download_button(
+        "Download Timetable Excel",
+        data=timetable_excel,
+        file_name="TA_Timetables.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
