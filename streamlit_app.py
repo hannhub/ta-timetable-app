@@ -1,43 +1,40 @@
-# Authentication temporarily disabled
 import streamlit as st
 import streamlit_authenticator as stauth
 import pandas as pd
 import os
 from collections import defaultdict
-# import yaml
-# from yaml.loader import SafeLoader
+import yaml
+from yaml.loader import SafeLoader
 
-
-# --- AUTHENTICATION SETUP ---
-names = ["Hannah", "Wendy"]
-usernames = ["hannah", "wendy"]
-hashed_passwords = [
-    "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
-    "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
-]
-
-credentials = {
-    "usernames": {
-        "hannah": {"name": "Hannah", "password": hashed_passwords[0]},
-        "wendy": {"name": "Wendy", "password": hashed_passwords[1]},
+# Authentication setup
+def setup_authenticator():
+    config = {
+        "credentials": {
+            "usernames": {
+                "hannah": {
+                    "name": "Hannah",
+                    "password": "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW"
+                },
+                "wendy": {
+                    "name": "Wendy",
+                    "password": "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"
+                }
+            }
+        },
+        "cookie": {
+            "name": "timetable_auth",
+            "key": "abcdef",
+            "expiry_days": 1
+        },
+        "preauthorized": {}
     }
-}
 
-cookie_config = {
-    "name": "ta_timetable_login",
-    "key": "supersecretkey123",  # keep this secret in production
-    "expiry_days": 1
-}
-
-authenticator = stauth.Authenticate(
-    {"credentials": credentials, "cookie": cookie_config, "preauthorized": {}},
-    cookie_config["name"],
-    cookie_config["key"],
-    cookie_expiry_days=cookie_config["expiry_days"]
-)
+    authenticator = stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
+    return authenticator, config
 
 
-st.set_page_config(layout="wide")
+# Setup and login
+authenticator, config = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
 
 if authentication_status is False:
@@ -50,7 +47,8 @@ else:
     st.success(f"Welcome, {name} 👋")
     authenticator.logout("Logout", "sidebar")
 
-st.title("TA Timetable Assignment")
+st.set_page_config(layout="wide")
+st.title("TA Timetable Assignment with Preference Saving")
 
 PREF_FILE = "saved_preferences.csv"
 
