@@ -15,14 +15,17 @@ def setup_authenticator():
         "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
     ]
 
+    credentials = {
+        usernames[i]: {
+            "name": names[i],
+            "password": hashed_passwords[i]
+        }
+        for i in range(len(usernames))
+    }
+
     config = {
         "credentials": {
-            "usernames": {
-                usernames[i]: {
-                    "name": names[i],
-                    "password": hashed_passwords[i]
-                } for i in range(len(usernames))
-            }
+            "usernames": credentials
         },
         "cookie": {
             "name": "timetable_auth",
@@ -32,12 +35,12 @@ def setup_authenticator():
         "preauthorized": {}
     }
 
-    return stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
+    authenticator = stauth.Authenticate(config, "timetable_auth", "abcdef", cookie_expiry_days=1)
+    return authenticator, config
 
 # Setup and login
-authenticator = setup_authenticator()
+authenticator, config = setup_authenticator()
 name, authentication_status, username = authenticator.login("Login", "main")
-
 
 if authentication_status is False:
     st.error("Username/password is incorrect")
