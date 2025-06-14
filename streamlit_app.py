@@ -195,10 +195,7 @@ else:
 
     pages = ["Home"]
 
-    if username and username in ADMIN_USERS:
-
-    if name in ADMIN_USERS:
-
+    if (username and username in ADMIN_USERS) or (name in ADMIN_USERS):
         pages.append("Admin")
     choice = st.sidebar.radio("Navigation", pages)
     if choice == "Admin":
