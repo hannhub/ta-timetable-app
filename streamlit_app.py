@@ -468,8 +468,6 @@ if uploaded_file:
             d for d in unique_days if d not in day_order
         ]
 
-        days = sorted(df["Day"].dropna().unique())
-
         periods = sorted(df["Period"].dropna().unique())
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
             for ta in sorted(df["Assigned TA"].dropna().unique()):
