@@ -32,7 +32,7 @@ def setup_authenticator():
     }
 
    authenticator = stauth.Authenticate(
-    config["credentials"],
+    config["credentials"]["usernames"],
     config["cookie"]["name"],
     config["cookie"]["key"],
     cookie_expiry_days=config["cookie"]["expiry_days"]
