@@ -1,6 +1,6 @@
 # Authentication temporarily disabled
 import streamlit as st
-# import streamlit_authenticator as stauth
+import streamlit_authenticator as stauth
 import pandas as pd
 import os
 from collections import defaultdict
@@ -8,8 +8,48 @@ from collections import defaultdict
 # from yaml.loader import SafeLoader
 
 
+# --- AUTHENTICATION SETUP ---
+names = ["Hannah", "Wendy"]
+usernames = ["hannah", "wendy"]
+hashed_passwords = [
+    "$2b$12$rLVuAJgX6cHIdJ1bl4DP3eALX0rOv.lzRGMh1ukM6oP.TZStBJHcW",  # hannah
+    "$2b$12$Zx9lY2bKf7kqjTR5IduUw.OTqT6Ybvv8y7ggcZk0OeWUM/OE/Ig2m"   # wendy
+]
+
+credentials = {
+    "usernames": {
+        "hannah": {"name": "Hannah", "password": hashed_passwords[0]},
+        "wendy": {"name": "Wendy", "password": hashed_passwords[1]},
+    }
+}
+
+cookie_config = {
+    "name": "ta_timetable_login",
+    "key": "supersecretkey123",  # keep this secret in production
+    "expiry_days": 1
+}
+
+authenticator = stauth.Authenticate(
+    {"credentials": credentials, "cookie": cookie_config, "preauthorized": {}},
+    cookie_config["name"],
+    cookie_config["key"],
+    cookie_expiry_days=cookie_config["expiry_days"]
+)
+
 
 st.set_page_config(layout="wide")
+name, authentication_status, username = authenticator.login("Login", "main")
+
+if authentication_status is False:
+    st.error("Username/password is incorrect")
+    st.stop()
+elif authentication_status is None:
+    st.warning("Please enter your username and password")
+    st.stop()
+else:
+    st.success(f"Welcome, {name} 👋")
+    authenticator.logout("Logout", "sidebar")
+
 st.title("TA Timetable Assignment")
 
 PREF_FILE = "saved_preferences.csv"
